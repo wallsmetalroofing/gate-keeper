@@ -4,7 +4,8 @@
   "description": "Module to prevent multiple calls to server or database for the same item at a time.",
   "main": "index.js",
   "scripts": {
-    "test": "npx mocha test.js"
+    "test": "npx mocha test.js",
+    "build": "tsc --watch"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,13 @@
   "bugs": {
     "url": "https://github.com/wallsmetalroofing/gate-keeper/issues"
   },
-  "homepage": "https://github.com/wallsmetalroofing/gate-keeper#readme"
+  "homepage": "https://github.com/wallsmetalroofing/gate-keeper#readme",
+  "dependencies": {
+    "deep-equal": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/deep-equal": "^1.0.1",
+    "@types/node": "^13.1.7",
+    "mocha": "^7.0.0"
+  }
 }
