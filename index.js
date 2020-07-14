@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.GateKeeper = void 0;
 const equal = require("deep-equal");
 /**
- * The GateKeeper function creates a instance of many keepers. All calls to the function with the same arguments will get bundled into one callback
+ * The GateKeeper function creates a instance of many keepers.
+ * All calls to the function with the same arguments will get bundled into one callback
  */
 function GateKeeper(callback) {
     /**
@@ -14,6 +16,7 @@ function GateKeeper(callback) {
             // get the currently running result if its there
             const result = getCallback(callArgs, running);
             if (result) {
+                // add the reject and resolve callbacks to the callback stack
                 result.reject.push(reject);
                 result.resolve.push(resolve);
             }
@@ -25,6 +28,7 @@ function GateKeeper(callback) {
                     resolve: [resolve]
                 };
                 running.push(instance);
+                // run the callback function to get the values
                 callback(...callArgs)
                     .then(result => {
                     // get the running instance
