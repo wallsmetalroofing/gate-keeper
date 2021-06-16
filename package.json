@@ -6,7 +6,11 @@
   "scripts": {
     "test": "npx nyc mocha test.js",
     "build": "tsc --watch",
-    "build:cli": "tsc"
+    "build:cli": "tsc",
+    "prerelease": "npm run build:cli && npm run test",
+    "release": "npm version patch",
+    "postversion": "git push && git push --tags && npm run github-release",
+    "github-release": "cross-var gh release create $npm_package_version"
   },
   "repository": {
     "type": "git",
@@ -22,7 +26,6 @@
   },
   "homepage": "https://github.com/wallsmetalroofing/gate-keeper#readme",
   "dependencies": {
-    "cross-var": "^1.1.0",
     "deep-equal": "^2.0.2"
   },
   "devDependencies": {
