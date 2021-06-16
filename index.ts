@@ -67,7 +67,7 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(call
 
                         // reject all of the waiting promises
                         if (instance) {
-                            for (const reject of instance.resolve) {
+                            for (const reject of instance.reject) {
                                 reject(err);
                             }
 

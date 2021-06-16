@@ -44,7 +44,7 @@ describe("Gate Keeper", () => {
 
     describe("result should be equal", () => {
 
-        it("deep equal", (done) => {
+        it("identical objects", (done) => {
 
             let firstResult = null;
 
@@ -70,6 +70,40 @@ describe("Gate Keeper", () => {
                     done(1);
                 }
             });
+        });
+
+        // ensure that if the original request is rejected that all callbacks throw
+        it("all requests should throw", done => {
+            let firstError = null;
+
+            const get = GateKeeper(() => (new Promise((_, r) => setTimeout(() => r(new Error("test")), 1))));
+
+            const runThen = (...args) => {
+                done(new Error("Promise Resolved"));
+            };
+
+            const catchErr = err => {
+                if (!firstError) {
+                    firstError = err;
+                } else {
+
+                    if (firstError === err) {
+                        done();
+                    } else {
+                        done(new Error("Either the errors are not identical or one of the promises resolved"));
+                    }
+
+                }
+            };
+
+            get(1)
+                .then(runThen)
+                .catch(catchErr);
+
+            get(1)
+                .then(runThen)
+                .catch(catchErr);
+
         });
     });
 

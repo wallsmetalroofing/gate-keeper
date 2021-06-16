@@ -47,7 +47,7 @@ function GateKeeper(callback) {
                     const instance = getCallback(callArgs, running);
                     // reject all of the waiting promises
                     if (instance) {
-                        for (const reject of instance.resolve) {
+                        for (const reject of instance.reject) {
                             reject(err);
                         }
                         // delete the instance
