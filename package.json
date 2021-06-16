@@ -1,6 +1,6 @@
 {
   "name": "@walls/gate-keeper",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Module to prevent multiple calls to server or database for the same item at a time.",
   "main": "index.js",
   "scripts": {
