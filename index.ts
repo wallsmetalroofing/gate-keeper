@@ -1,9 +1,9 @@
 const equal = require("deep-equal");
 
 interface runningCallback {
-    args: any[],
-    resolve: ((...args: any) => any)[],
-    reject: ((error: Error) => any)[],
+    args: any[];
+    resolve: ((...args: any) => any)[];
+    reject: ((error: Error) => any)[];
 }
 
 type GateKeeperReturn<ReturnValue, CallbackArgs extends Array<any>> = {
@@ -12,13 +12,13 @@ type GateKeeperReturn<ReturnValue, CallbackArgs extends Array<any>> = {
     cancel(...callArgs: any[]): runningCallback | null;
 };
 
-
 /**
  * The GateKeeper function creates a instance of many keepers.
  * All calls to the function with the same arguments will get bundled into one callback
  */
-export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(callback: (...args: CallbackArgs) => Promise<CallbackReturn>): GateKeeperReturn<CallbackReturn, CallbackArgs> {
-
+export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(
+    callback: (...args: CallbackArgs) => Promise<CallbackReturn>
+): GateKeeperReturn<CallbackReturn, CallbackArgs> {
     /**
      * An object holding all of the promises currently active for this GateKeeper instance
      */
@@ -26,28 +26,25 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(call
 
     const get = function (...callArgs: any): Promise<any> {
         return new Promise((resolve, reject) => {
-
             // get the currently running result if its there
             const result = getCallback(callArgs, running);
             if (result) {
-
                 // add the reject and resolve callbacks to the callback stack
                 result.reject.push(reject);
                 result.resolve.push(resolve);
-
             } else {
                 // create a new instance and save it to the list
                 const instance: runningCallback = {
                     args: callArgs,
                     reject: [reject],
-                    resolve: [resolve]
+                    resolve: [resolve],
                 };
 
                 running.push(instance);
 
                 // run the callback function to get the values
                 callback(...callArgs)
-                    .then(result => {
+                    .then((result) => {
                         // get the running instance
                         const instance = getCallback(callArgs, running);
 
@@ -61,7 +58,7 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(call
                             deleteCallback(callArgs, running);
                         }
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         // get the running instance
                         const instance = getCallback(callArgs, running);
 
@@ -76,7 +73,6 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(call
                         }
                     });
             }
-
         });
     };
 
@@ -100,11 +96,8 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(call
     return get;
 }
 
-
 function getCallback(args: any[], running: runningCallback[]) {
-
     for (const instance of running) {
-
         // find the running callback and return the object
         if (equal(args, instance.args)) {
             return instance;

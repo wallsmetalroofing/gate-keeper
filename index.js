@@ -25,12 +25,12 @@ function GateKeeper(callback) {
                 const instance = {
                     args: callArgs,
                     reject: [reject],
-                    resolve: [resolve]
+                    resolve: [resolve],
                 };
                 running.push(instance);
                 // run the callback function to get the values
                 callback(...callArgs)
-                    .then(result => {
+                    .then((result) => {
                     // get the running instance
                     const instance = getCallback(callArgs, running);
                     // resolve all of the waiting promises
@@ -42,7 +42,7 @@ function GateKeeper(callback) {
                         deleteCallback(callArgs, running);
                     }
                 })
-                    .catch(err => {
+                    .catch((err) => {
                     // get the running instance
                     const instance = getCallback(callArgs, running);
                     // reject all of the waiting promises
