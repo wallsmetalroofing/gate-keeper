@@ -1,12 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GateKeeper = void 0;
+exports.GateKeeperMiss = exports.GateKeeperHit = exports.GateKeeper = void 0;
 const equal = require("deep-equal");
+/**
+ * Callback to keep track of hit and miss stats
+ * @param args
+ */
+let registerHit = (label) => { };
+/**
+ * Callback to keep track of hit and miss stats
+ * @param args
+ */
+let registerMiss = (label) => { };
 /**
  * The GateKeeper function creates a instance of many keepers.
  * All calls to the function with the same arguments will get bundled into one callback
  */
 function GateKeeper(callback) {
+    /**
+     * The label used for the metrics callbacks
+     */
+    let label = undefined;
     /**
      * An object holding all of the promises currently active for this GateKeeper instance
      */
@@ -19,6 +33,7 @@ function GateKeeper(callback) {
                 // add the reject and resolve callbacks to the callback stack
                 result.reject.push(reject);
                 result.resolve.push(resolve);
+                registerHit(label);
             }
             else {
                 // create a new instance and save it to the list
@@ -54,6 +69,7 @@ function GateKeeper(callback) {
                         deleteCallback(callArgs, running);
                     }
                 });
+                registerMiss(label);
             }
         });
     };
@@ -71,6 +87,13 @@ function GateKeeper(callback) {
         deleteCallback(callArgs, running);
         return instance;
     };
+    /**
+     * Set the label to use in the metrics callbacks
+     *
+     * @param name
+     * @returns
+     */
+    get.setLabel = (name) => (label = name);
     return get;
 }
 exports.GateKeeper = GateKeeper;
@@ -91,3 +114,25 @@ function deleteCallback(args, running) {
         }
     }
 }
+/**
+ * Register a callback function to run when the gatekeeper registers a hit.
+ *
+ * A hit is registered when a previously started callback can be used
+ *
+ * @param callback the callback to run
+ */
+function GateKeeperHit(callback) {
+    registerHit = callback;
+}
+exports.GateKeeperHit = GateKeeperHit;
+/**
+ * Register a callback function to run when the gatekeeper registers a miss.
+ *
+ * A miss is registered when a new callback stack is created.
+ *
+ * @param callback the callback to run
+ */
+function GateKeeperMiss(callback) {
+    registerHit = callback;
+}
+exports.GateKeeperMiss = GateKeeperMiss;

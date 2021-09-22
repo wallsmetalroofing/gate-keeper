@@ -13,12 +13,28 @@ type GateKeeperReturn<ReturnValue, CallbackArgs extends Array<any>> = {
 };
 
 /**
+ * Callback to keep track of hit and miss stats
+ * @param args
+ */
+let registerHit = (label?: string) => {};
+/**
+ * Callback to keep track of hit and miss stats
+ * @param args
+ */
+let registerMiss = (label?: string) => {};
+
+/**
  * The GateKeeper function creates a instance of many keepers.
  * All calls to the function with the same arguments will get bundled into one callback
  */
 export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(
     callback: (...args: CallbackArgs) => Promise<CallbackReturn>
 ): GateKeeperReturn<CallbackReturn, CallbackArgs> {
+    /**
+     * The label used for the metrics callbacks
+     */
+    let label: undefined | string = undefined;
+
     /**
      * An object holding all of the promises currently active for this GateKeeper instance
      */
@@ -32,6 +48,8 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(
                 // add the reject and resolve callbacks to the callback stack
                 result.reject.push(reject);
                 result.resolve.push(resolve);
+
+                registerHit(label);
             } else {
                 // create a new instance and save it to the list
                 const instance: runningCallback = {
@@ -72,6 +90,8 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(
                             deleteCallback(callArgs, running);
                         }
                     });
+
+                registerMiss(label);
             }
         });
     };
@@ -93,6 +113,14 @@ export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(
         return instance;
     };
 
+    /**
+     * Set the label to use in the metrics callbacks
+     *
+     * @param name
+     * @returns
+     */
+    get.setLabel = (name: string) => (label = name);
+
     return get;
 }
 
@@ -113,4 +141,26 @@ function deleteCallback(args: any[], running: runningCallback[]) {
             running.splice(i, 1);
         }
     }
+}
+
+/**
+ * Register a callback function to run when the gatekeeper registers a hit.
+ *
+ * A hit is registered when a previously started callback can be used
+ *
+ * @param callback the callback to run
+ */
+export function GateKeeperHit(callback: (label?: string) => void) {
+    registerHit = callback;
+}
+
+/**
+ * Register a callback function to run when the gatekeeper registers a miss.
+ *
+ * A miss is registered when a new callback stack is created.
+ *
+ * @param callback the callback to run
+ */
+export function GateKeeperMiss(callback: (label?: string) => void) {
+    registerHit = callback;
 }

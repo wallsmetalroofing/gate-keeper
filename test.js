@@ -1,6 +1,6 @@
 /* es-lint: ecmaVersion */
 const assert = require("assert");
-const { GateKeeper } = require("./index");
+const { GateKeeper, GateKeeperHit, GateKeeperMiss } = require("./index");
 const { debounce } = require("./debounce");
 
 describe("Gate Keeper", () => {
@@ -103,6 +103,63 @@ describe("Gate Keeper", () => {
             get(1).then(runThen).catch(catchErr);
 
             get(1).then(runThen).catch(catchErr);
+        });
+    });
+
+    describe("Metrics Callbacks", () => {
+        const reset = () => {
+            GateKeeperHit(() => {});
+            GateKeeperMiss(() => {});
+        };
+        beforeEach(reset);
+        afterEach(reset);
+
+        it("should call the hit callback once", (done) => {
+            const get = GateKeeper(
+                () => new Promise((r) => setTimeout(() => r(), 1))
+            );
+            GateKeeperHit(() => done());
+            get(1)
+                .then(() => {})
+                .catch(done);
+            get(1)
+                .then(() => {})
+                .catch(done);
+        });
+
+        it("should call the miss callback once", (done) => {
+            const get = GateKeeper(
+                () => new Promise((r) => setTimeout(() => r(), 1))
+            );
+            GateKeeperMiss(() => done());
+            get(1)
+                .then(() => {})
+                .catch(done);
+            get(1)
+                .then(() => {})
+                .catch(done);
+        });
+
+        it("should call the miss then the hit callback", (done) => {
+            const get = GateKeeper(
+                () => new Promise((r) => setTimeout(() => r(), 1))
+            );
+            let miss = false;
+            GateKeeperHit(() => {
+                if (miss) {
+                    done();
+                } else {
+                    done(new Error("Miss callback didn't run yet."));
+                }
+            });
+            GateKeeperMiss(() => (miss = true));
+
+            get(1)
+                .then(() => {})
+                .catch(done);
+            get(1)
+                .then(() => {})
+                .catch(done);
         });
     });
 });
