@@ -162,5 +162,5 @@ export function GateKeeperHit(callback: (label?: string) => void) {
  * @param callback the callback to run
  */
 export function GateKeeperMiss(callback: (label?: string) => void) {
-    registerHit = callback;
+    registerMiss = callback;
 }

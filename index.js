@@ -133,6 +133,6 @@ exports.GateKeeperHit = GateKeeperHit;
  * @param callback the callback to run
  */
 function GateKeeperMiss(callback) {
-    registerHit = callback;
+    registerMiss = callback;
 }
 exports.GateKeeperMiss = GateKeeperMiss;

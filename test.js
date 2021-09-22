@@ -111,14 +111,16 @@ describe("Gate Keeper", () => {
             GateKeeperHit(() => {});
             GateKeeperMiss(() => {});
         };
-        beforeEach(reset);
         afterEach(reset);
 
         it("should call the hit callback once", (done) => {
             const get = GateKeeper(
                 () => new Promise((r) => setTimeout(() => r(), 1))
             );
+
             GateKeeperHit(() => done());
+            GateKeeperMiss(() => {});
+
             get(1)
                 .then(() => {})
                 .catch(done);
@@ -131,7 +133,10 @@ describe("Gate Keeper", () => {
             const get = GateKeeper(
                 () => new Promise((r) => setTimeout(() => r(), 1))
             );
+
+            GateKeeperHit(() => {});
             GateKeeperMiss(() => done());
+
             get(1)
                 .then(() => {})
                 .catch(done);
@@ -144,6 +149,7 @@ describe("Gate Keeper", () => {
             const get = GateKeeper(
                 () => new Promise((r) => setTimeout(() => r(), 1))
             );
+
             let miss = false;
             GateKeeperHit(() => {
                 if (miss) {
