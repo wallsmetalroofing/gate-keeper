@@ -12,7 +12,9 @@ declare type GateKeeperReturn<ReturnValue, CallbackArgs extends Array<any>> = {
  * The GateKeeper function creates a instance of many keepers.
  * All calls to the function with the same arguments will get bundled into one callback
  */
-export declare function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(callback: (...args: CallbackArgs) => Promise<CallbackReturn>): GateKeeperReturn<CallbackReturn, CallbackArgs>;
+export declare function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(callback: (...args: CallbackArgs) => Promise<CallbackReturn>, options?: {
+    label?: string;
+}): GateKeeperReturn<CallbackReturn, CallbackArgs>;
 /**
  * Register a callback function to run when the gatekeeper registers a hit.
  *

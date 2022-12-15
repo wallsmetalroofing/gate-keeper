@@ -16,11 +16,11 @@ let registerMiss = (label) => { };
  * The GateKeeper function creates a instance of many keepers.
  * All calls to the function with the same arguments will get bundled into one callback
  */
-function GateKeeper(callback) {
+function GateKeeper(callback, options) {
     /**
      * The label used for the metrics callbacks
      */
-    let label = undefined;
+    let label = options && options.label ? options.label : undefined;
     /**
      * An object holding all of the promises currently active for this GateKeeper instance
      */

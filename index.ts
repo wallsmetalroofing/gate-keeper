@@ -28,12 +28,14 @@ let registerMiss = (label?: string) => {};
  * All calls to the function with the same arguments will get bundled into one callback
  */
 export function GateKeeper<CallbackReturn, CallbackArgs extends Array<any>>(
-    callback: (...args: CallbackArgs) => Promise<CallbackReturn>
+    callback: (...args: CallbackArgs) => Promise<CallbackReturn>,
+    options?: { label?: string }
 ): GateKeeperReturn<CallbackReturn, CallbackArgs> {
     /**
      * The label used for the metrics callbacks
      */
-    let label: undefined | string = undefined;
+    let label: undefined | string =
+        options && options.label ? options.label : undefined;
 
     /**
      * An object holding all of the promises currently active for this GateKeeper instance
